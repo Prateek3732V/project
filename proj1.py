@@ -135,12 +135,18 @@ while check==0:
                     elif choice1 == 2:
                         product_id = input("Enter product ID to issue stock: ")
                         quantity = int(input("Enter quantity to issue: "))
-                        cursor.execute("UPDATE products SET stock_quantity = stock_quantity - %s WHERE product_id=%s", (quantity, product_id))
-                        cursor.execute("INSERT INTO stock_movements (product_id, movement_type, quantity, movement_date) VALUES (%s, 'OUT', %s, NOW())", (product_id, quantity))
-                        mydb.commit()
-                        print("Stock issued successfully.")
+                        if quantity <= 0:
+                            print("Quantity cannot be zero or negative.")
+                        else:
+                            if product_id not in [product[0] for product in products]:
+                                print("Product ID does not exist. Please add the product first.")
+                            else:
+                                cursor.execute("UPDATE products SET stock_quantity = stock_quantity - %s WHERE product_id=%s", (quantity, product_id))
+                                cursor.execute("INSERT INTO stock_movements (product_id, movement_type, quantity, movement_date) VALUES (%s, 'OUT', %s, NOW())", (product_id, quantity))
+                                mydb.commit()
+                                print("Stock issued successfully.")
             else:
-                print("Invalid username or password.")
+                print("Invalid credentials.")
 
 
         elif login_choice == 2:
@@ -166,14 +172,20 @@ while check==0:
                             name = input("Enter supplier name: ")
                             contact_info = input("Enter supplier contact info: ")
                             supplier_id = input("Enter supplier ID: ")
-                            cursor.execute("INSERT INTO suppliers (name, contact_info, supplier_id) VALUES (%s, %s, %s)", (name, contact_info, supplier_id))
-                            mydb.commit()
-                            print("Supplier added successfully.")
+                            if supplier_id in [supplier[0] for supplier in cursor.execute("SELECT supplier_id FROM suppliers")]:
+                                print("Supplier ID already exists. Please choose a different ID.")
+                            else:
+                                cursor.execute("INSERT INTO suppliers (name, contact_info, supplier_id) VALUES (%s, %s, %s)", (name, contact_info, supplier_id))
+                                mydb.commit()
+                                print("Supplier added successfully.")
                         elif ch=='2':
                             supplier_id = input("Enter supplier ID to remove: ")
-                            cursor.execute("DELETE FROM suppliers WHERE supplier_id=%s", (supplier_id,))
-                            mydb.commit()
-                            print("Supplier removed successfully.")
+                            if supplier_id not in [supplier[0] for supplier in cursor.execute("SELECT supplier_id FROM suppliers")]:
+                                print("Supplier ID does not exist.")
+                            else:
+                                cursor.execute("DELETE FROM suppliers WHERE supplier_id=%s", (supplier_id,))
+                                mydb.commit()
+                                print("Supplier removed successfully.")
                         else:
                             print("Invalid choice.")
                     elif choice1==2:
@@ -191,9 +203,12 @@ while check==0:
                         product_id = input("Enter product ID: ")
                         price = float(input("Enter product price: "))
                         stock_quantity = int(input("Enter stock quantity: "))
-                        cursor.execute("INSERT INTO products (name, description, supplier_id, product_id, price, stock_quantity) VALUES (%s, %s, %s, %s, %s, %s)", (name, description, supplier_id, product_id, price, stock_quantity))
-                        mydb.commit()
-                        print("Product added successfully.")
+                        if supplier_id not in [supplier[0] for supplier in suppliers1]:
+                            print("Supplier ID does not exist. Please add the supplier first.")
+                        else:                               
+                            cursor.execute("INSERT INTO products (name, description, supplier_id, product_id, price, stock_quantity) VALUES (%s, %s, %s, %s, %s, %s)", (name, description, supplier_id, product_id, price, stock_quantity))
+                            mydb.commit()
+                            print("Product added successfully.")
                     elif choice1 == 4:
                         search_choice = input("Search by (1) Name or (2) ID or (3) Show All? ")
                         if search_choice == '1':
@@ -214,29 +229,50 @@ while check==0:
                     elif choice1 == 5:
                         product_id = input("Enter product ID to receive stock: ")
                         quantity = int(input("Enter quantity to receive: "))
-                        cursor.execute("UPDATE products SET stock_quantity = stock_quantity + %s WHERE product_id=%s", (quantity, product_id))
-                        cursor.execute("INSERT INTO stock_movements (product_id, movement_type, quantity, movement_date) VALUES (%s, 'IN', %s, NOW())", (product_id, quantity))
-                        mydb.commit()
-                        print("Stock received successfully.")
+                        if quantity <= 0:
+                            print("Quantity cannot be zero or negative.")
+                        else:
+                            if product_id not in [product[0] for product in products]:
+                                print("Product ID does not exist. Please add the product first.")
+                            else:
+                                cursor.execute("UPDATE products SET stock_quantity = stock_quantity + %s WHERE product_id=%s", (quantity, product_id))
+                                cursor.execute("INSERT INTO stock_movements (product_id, movement_type, quantity, movement_date) VALUES (%s, 'IN', %s, NOW())", (product_id, quantity))
+                                mydb.commit()
+                                print("Stock received successfully.")
                     elif choice1 == 6:
                         product_id = input("Enter product ID to issue stock: ")
                         quantity = int(input("Enter quantity to issue: "))
-                        cursor.execute("UPDATE products SET stock_quantity = stock_quantity - %s WHERE product_id=%s", (quantity, product_id))
-                        cursor.execute("INSERT INTO stock_movements (product_id, movement_type, quantity, movement_date) VALUES (%s, 'OUT', %s, NOW())", (product_id, quantity))
-                        mydb.commit()
-                        print("Stock issued successfully.")
+                        if quantity <= 0:
+                            print("Quantity cannot be zero or negative.")
+                        else:
+                            if product_id not in [product[0] for product in products]:
+                                print("Product ID does not exist. Please add the product first.")
+                            else:
+                                cursor.execute("UPDATE products SET stock_quantity = stock_quantity - %s WHERE product_id=%s", (quantity, product_id))
+                                cursor.execute("INSERT INTO stock_movements (product_id, movement_type, quantity, movement_date) VALUES (%s, 'OUT', %s, NOW())", (product_id, quantity))
+                                mydb.commit()
+                                print("Stock issued successfully.")
                     elif choice1 == 7:
                         product_id = input("Enter product ID to adjust stock: ")
                         new_quantity = int(input("Enter new stock quantity: "))
-                        cursor.execute("UPDATE products SET stock_quantity = %s WHERE product_id=%s", (new_quantity, product_id))
-                        mydb.commit()
-                        print("Stock adjusted successfully.")
+                        if product_id not in [product[0] for product in products]:
+                            print("Product ID does not exist. Please add the product first.")
+                        else:
+                            if new_quantity < 0:
+                                print("Stock quantity cannot be negative.")
+                            else:
+                                cursor.execute("UPDATE products SET stock_quantity = %s WHERE product_id=%s", (new_quantity, product_id))
+                                mydb.commit()
+                                print("Stock adjusted successfully.")
                     elif choice1 == 8:
                         low_stock_threshold = int(input("Enter low stock threshold: "))
-                        cursor.execute("SELECT * FROM products WHERE stock_quantity < %s", (low_stock_threshold,))
-                        low_stock_products = cursor.fetchall()
-                        for product in low_stock_products:
-                            print(f"ID: {product[0]}, Name: {product[1]}, Description: {product[2]}, Supplier ID: {product[3]}, Price: {product[4]}, Stock Quantity: {product[5]}")
+                        if low_stock_threshold <= 0:
+                            print("Threshold cannot be zero or negative.")
+                        else:
+                            cursor.execute("SELECT * FROM products WHERE stock_quantity < %s", (low_stock_threshold,))
+                            low_stock_products = cursor.fetchall()
+                            for product in low_stock_products:
+                                print(f"ID: {product[0]}, Name: {product[1]}, Description: {product[2]}, Supplier ID: {product[3]}, Price: {product[4]}, Stock Quantity: {product[5]}")
                     elif choice1 == 9:
                         cursor.execute("SELECT * FROM stock_movements")
                         movements = cursor.fetchall()
@@ -248,12 +284,15 @@ while check==0:
                         print(f"Total stock valuation: {total_valuation}")
                     elif choice1 == 11:
                         id = input("Enter product ID to delete: ")
-                        cursor.execute("DELETE FROM products WHERE product_id=%s", (id,))
-                        mydb.commit()
-                        print("Product deleted successfully.")
+                        if id not in [product[0] for product in products]:
+                            print("Product ID does not exist.")
+                        else:
+                            cursor.execute("DELETE FROM products WHERE product_id=%s", (id,))
+                            mydb.commit()
+                            print("Product deleted successfully.")
 
             else:
-                print("Invalid username or password.")
+                print("Invalid credentials.")
 
         elif login_choice == 3:
             uid = input("Enter your user ID: ")
@@ -278,14 +317,20 @@ while check==0:
                             name = input("Enter supplier name: ")
                             contact_info = input("Enter supplier contact info: ")
                             supplier_id = input("Enter supplier ID: ")
-                            cursor.execute("INSERT INTO suppliers (name, contact_info, supplier_id) VALUES (%s, %s, %s)", (name, contact_info, supplier_id))
-                            mydb.commit()
-                            print("Supplier added successfully.")
+                            if supplier_id in [supplier[0] for supplier in cursor.execute("SELECT supplier_id FROM suppliers")]:
+                                print("Supplier ID already exists. Please choose a different ID.")
+                            else:
+                                cursor.execute("INSERT INTO suppliers (name, contact_info, supplier_id) VALUES (%s, %s, %s)", (name, contact_info, supplier_id))
+                                mydb.commit()
+                                print("Supplier added successfully.")
                         elif ch=='2':
                             supplier_id = input("Enter supplier ID to remove: ")
-                            cursor.execute("DELETE FROM suppliers WHERE supplier_id=%s", (supplier_id,))
-                            mydb.commit()
-                            print("Supplier removed successfully.")
+                            if supplier_id not in [supplier[0] for supplier in cursor.execute("SELECT supplier_id FROM suppliers")]:
+                                print("Supplier ID does not exist.")
+                            else:
+                                cursor.execute("DELETE FROM suppliers WHERE supplier_id=%s", (supplier_id,))
+                                mydb.commit()
+                                print("Supplier removed successfully.")
                         else:
                             print("Invalid choice.")
 
@@ -304,9 +349,21 @@ while check==0:
                         product_id = input("Enter product ID: ")
                         price = float(input("Enter product price: "))
                         stock_quantity = int(input("Enter stock quantity: "))
-                        cursor.execute("INSERT INTO products (name, description, supplier_id, product_id, price, stock_quantity) VALUES (%s, %s, %s, %s, %s, %s)", (name, description, supplier_id, product_id, price, stock_quantity))
-                        mydb.commit()
-                        print("Product added successfully.")
+                        if supplier_id not in [supplier[0] for supplier in cursor.execute("SELECT supplier_id FROM suppliers")]:
+                            print("Supplier ID does not exist. Please add the supplier first.")
+                        else:
+                            if product_id in [product[0] for product in cursor.execute("SELECT product_id FROM products")]:
+                                print("Product ID already exists. Please choose a different ID.")
+                            else:
+                                if price <= 0:
+                                    print("Price cannot be zero or negative.")
+                                else:
+                                    if stock_quantity <= 0:
+                                        print("Stock quantity cannot be zero or negative.")
+                                    else:
+                                        cursor.execute("INSERT INTO products (name, description, supplier_id, product_id, price, stock_quantity) VALUES (%s, %s, %s, %s, %s, %s)", (name, description, supplier_id, product_id, price, stock_quantity))
+                                        mydb.commit()
+                                        print("Product added successfully.")
                     elif choice1 == 4:
                         search_choice = input("Search by (1) Name or (2) ID or (3) Show All? ")
                         if search_choice == '1':
@@ -328,29 +385,50 @@ while check==0:
                     elif choice1 == 5:
                         product_id = input("Enter product ID to receive stock: ")
                         quantity = int(input("Enter quantity to receive: "))
-                        cursor.execute("UPDATE products SET stock_quantity = stock_quantity + %s WHERE product_id=%s", (quantity, product_id))
-                        cursor.execute("INSERT INTO stock_movements (product_id, movement_type, quantity, movement_date) VALUES (%s, 'IN', %s, NOW())", (product_id, quantity))
-                        mydb.commit()
-                        print("Stock received successfully.")
+                        if product_id not in [product[0] for product in cursor.execute("SELECT product_id FROM products")]:
+                            print("Product ID does not exist. Please add the product first.")
+                        else:
+                            if quantity <= 0:
+                                print("Quantity cannot be zero or negative.")
+                            else:
+                                cursor.execute("UPDATE products SET stock_quantity = stock_quantity + %s WHERE product_id=%s", (quantity, product_id))
+                                cursor.execute("INSERT INTO stock_movements (product_id, movement_type, quantity, movement_date) VALUES (%s, 'IN', %s, NOW())", (product_id, quantity))
+                                mydb.commit()
+                                print("Stock received successfully.")
                     elif choice1 == 6:
                         product_id = input("Enter product ID to issue stock: ")
                         quantity = int(input("Enter quantity to issue: "))
-                        cursor.execute("UPDATE products SET stock_quantity = stock_quantity - %s WHERE product_id=%s", (quantity, product_id))
-                        cursor.execute("INSERT INTO stock_movements (product_id, movement_type, quantity, movement_date) VALUES (%s, 'OUT', %s, NOW())", (product_id, quantity))
-                        mydb.commit()
-                        print("Stock issued successfully.")
+                        if product_id not in [product[0] for product in cursor.execute("SELECT product_id FROM products")]:
+                            print("Product ID does not exist. Please add the product first.")
+                        else:
+                            if quantity <= 0:
+                                print("Quantity cannot be zero or negative.")
+                            else:   
+                                cursor.execute("UPDATE products SET stock_quantity = stock_quantity - %s WHERE product_id=%s", (quantity, product_id))
+                                cursor.execute("INSERT INTO stock_movements (product_id, movement_type, quantity, movement_date) VALUES (%s, 'OUT', %s, NOW())", (product_id, quantity))
+                                mydb.commit()
+                                print("Stock issued successfully.")
                     elif choice1 == 7:
                         product_id = input("Enter product ID to adjust stock: ")
                         new_quantity = int(input("Enter new stock quantity: "))
-                        cursor.execute("UPDATE products SET stock_quantity = %s WHERE product_id=%s", (new_quantity, product_id))
-                        mydb.commit()
-                        print("Stock adjusted successfully.")
+                        if product_id not in [product[0] for product in cursor.execute("SELECT product_id FROM products")]:
+                            print("Product ID does not exist. Please add the product first.")
+                        else:
+                            if new_quantity <= 0:
+                                print("Stock quantity cannot be zero or negative.")
+                            else:
+                                cursor.execute("UPDATE products SET stock_quantity = %s WHERE product_id=%s", (new_quantity, product_id))
+                                mydb.commit()
+                                print("Stock adjusted successfully.")
                     elif choice1 == 8:
                         low_stock_threshold = int(input("Enter low stock threshold: "))
-                        cursor.execute("SELECT * FROM products WHERE stock_quantity < %s", (low_stock_threshold,))
-                        low_stock_products = cursor.fetchall()
-                        for product in low_stock_products:
-                            print(f"ID: {product[0]}, Name: {product[1]}, Description: {product[2]}, Supplier ID: {product[3]}, Price: {product[4]}, Stock Quantity: {product[5]}")
+                        if low_stock_threshold <= 0:
+                            print("Threshold cannot be zero or negative.")
+                        else:
+                            cursor.execute("SELECT * FROM products WHERE stock_quantity < %s", (low_stock_threshold,))
+                            low_stock_products = cursor.fetchall()
+                            for product in low_stock_products:
+                                print(f"ID: {product[0]}, Name: {product[1]}, Description: {product[2]}, Supplier ID: {product[3]}, Price: {product[4]}, Stock Quantity: {product[5]}")
                     elif choice1 == 9:
                         cursor.execute("SELECT * FROM stock_movements")
                         movements = cursor.fetchall()
@@ -371,21 +449,30 @@ while check==0:
                             username = input("Enter admin username: ")
                             password = input("Enter admin password: ")
                             admin_id = input("Enter admin user ID: ")
-                            cursor.execute("INSERT INTO admins (username, password, user_id) VALUES (%s, %s, %s)", (username, password, admin_id))
-                            mydb.commit()
-                            print("Admin added successfully.")
+                            if admin_id in [admin[0] for admin in cursor.execute("SELECT user_id FROM admins")]:
+                                print("Admin ID already exists. Please choose a different ID.")
+                            else:
+                                cursor.execute("INSERT INTO admins (username, password, user_id) VALUES (%s, %s, %s)", (username, password, admin_id))
+                                mydb.commit()
+                                print("Admin added successfully.")
                         elif cho=='2':
                             admin_id = input("Enter admin ID to remove: ")
-                            cursor.execute("DELETE FROM admins WHERE user_id=%s", (admin_id,))
-                            mydb.commit()
-                            print("Admin removed successfully.")
+                            if admin_id not in [admin[0] for admin in cursor.execute("SELECT user_id FROM admins")]:
+                                print("Admin ID does not exist.")
+                            else:
+                                cursor.execute("DELETE FROM admins WHERE user_id=%s", (admin_id,))
+                                mydb.commit()
+                                print("Admin removed successfully.")
                         elif cho=='3':
                             admin_id = input("Enter admin ID to edit: ")
                             new_username = input("Enter new admin username: ")
                             new_password = input("Enter new admin password: ")
-                            cursor.execute("UPDATE admins SET username=%s, password=%s WHERE user_id=%s", (new_username, new_password, admin_id))
-                            mydb.commit()
-                            print("Admin edited successfully.")
+                            if admin_id not in [admin[0] for admin in cursor.execute("SELECT user_id FROM admins")]:
+                                print("Admin ID does not exist.")
+                            else:
+                                cursor.execute("UPDATE admins SET username=%s, password=%s WHERE user_id=%s", (new_username, new_password, admin_id))
+                                mydb.commit()
+                                print("Admin edited successfully.")
                         else:
                             print("Invalid choice.")
                     elif choice1 == 13:
@@ -394,21 +481,30 @@ while check==0:
                             manager_id = input("Enter manager ID: ")
                             username = input("Enter manager username: ")
                             password = input("Enter manager password: ")
-                            cursor.execute("INSERT INTO managers (user_id, username, password) VALUES (%s, %s, %s)", (manager_id, username, password))
-                            mydb.commit()
-                            print("Manager added successfully.")
+                            if manager_id in [manager[0] for manager in cursor.execute("SELECT user_id FROM managers")]:
+                                print("Manager ID already exists. Please choose a different ID.")
+                            else:
+                                cursor.execute("INSERT INTO managers (user_id, username, password) VALUES (%s, %s, %s)", (manager_id, username, password))
+                                mydb.commit()
+                                print("Manager added successfully.")
                         elif cho=='2':
                             manager_id = input("Enter manager ID to remove: ")
-                            cursor.execute("DELETE FROM managers WHERE user_id=%s", (manager_id,))
+                            if manager_id not in [manager[0] for manager in cursor.execute("SELECT user_id FROM managers")]:
+                                print("Manager ID does not exist.")
+                            else:
+                                cursor.execute("DELETE FROM managers WHERE user_id=%s", (manager_id,))
                             mydb.commit()
                             print("Manager removed successfully.")
                         elif cho=='3':
                             manager_id = input("Enter manager ID to edit: ")
                             new_username = input("Enter new manager username: ")
                             new_password = input("Enter new manager password: ")
-                            cursor.execute("UPDATE managers SET username=%s, password=%s WHERE user_id=%s", (new_username, new_password, manager_id))
-                            mydb.commit()
-                            print("Manager edited successfully.")
+                            if manager_id not in [manager[0] for manager in cursor.execute("SELECT user_id FROM managers")]:
+                                print("Manager ID does not exist.")
+                            else:
+                                cursor.execute("UPDATE managers SET username=%s, password=%s WHERE user_id=%s", (new_username, new_password, manager_id))
+                                mydb.commit()
+                                print("Manager edited successfully.")
                         else:
                             print("Invalid choice.")
                     
@@ -418,21 +514,30 @@ while check==0:
                             sales_person_id = input("Enter sales person ID: ")
                             username = input("Enter sales person username: ")
                             password = input("Enter sales person password: ")
-                            cursor.execute("INSERT INTO sales_person (user_id, username, password) VALUES (%s, %s, %s)", (sales_person_id, username, password))
-                            mydb.commit()
-                            print("Sales person added successfully.")
+                            if sales_person_id in [sp[0] for sp in cursor.execute("SELECT user_id FROM sales_person")]:
+                                print("Sales person ID already exists. Please choose a different ID.")
+                            else:
+                                cursor.execute("INSERT INTO sales_person (user_id, username, password) VALUES (%s, %s, %s)", (sales_person_id, username, password))
+                                mydb.commit()
+                                print("Sales person added successfully.")
                         elif cho=='2':
                             sales_person_id = input("Enter sales person ID to remove: ")
-                            cursor.execute("DELETE FROM sales_person WHERE user_id=%s", (sales_person_id,))
-                            mydb.commit()
-                            print("Sales person removed successfully.")
+                            if sales_person_id not in [sp[0] for sp in cursor.execute("SELECT user_id FROM sales_person")]:
+                                print("Sales person ID does not exist.")
+                            else:
+                                cursor.execute("DELETE FROM sales_person WHERE user_id=%s", (sales_person_id,))
+                                mydb.commit()
+                                print("Sales person removed successfully.")
                         elif cho=='3':
                             sales_person_id = input("Enter sales person ID to edit: ")
                             new_username = input("Enter new sales person username: ")
                             new_password = input("Enter new sales person password: ")
-                            cursor.execute("UPDATE sales_person SET username=%s, password=%s WHERE user_id=%s", (new_username, new_password, sales_person_id))
-                            mydb.commit()
-                            print("Sales person edited successfully.")
+                            if sales_person_id not in [sp[0] for sp in cursor.execute("SELECT user_id FROM sales_person")]:
+                                print("Sales person ID does not exist.")
+                            else:
+                                cursor.execute("UPDATE sales_person SET username=%s, password=%s WHERE user_id=%s", (new_username, new_password, sales_person_id))
+                                mydb.commit()
+                                print("Sales person edited successfully.")
                         else:
                             print("Invalid choice.")
                     else:
@@ -440,4 +545,4 @@ while check==0:
 
                    
     else:
-        print("Invalid username or password.")
+        print("Invalid credentials.")
