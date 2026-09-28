@@ -1,6 +1,6 @@
 
 
-Prerequisites
+#  Prerequisites
 
 Before running the application, make sure the following software is installed on your system:
 
@@ -12,11 +12,11 @@ Clone or Set Up the Project Repository
 Install the required MySQL connector package by giving the command in terminal:   "pip install mysql-connector-python"
 
 
-Configuration & First-Time Database Setup
+## Configuration & First-Time Database Setup
 Start MySQL Service:Ensure your local MySQL server is up and running.Database Auto-Initialization:
 The application automatically initializes the required database (warehouse_management) and schema tables (admins, managers, sales_person, suppliers, products, stock_movements, login_history) upon the first run.   
 
-Creating Initial Seed Users (First Launch)
+### Creating Initial Seed Users (First Launch)
 Because the database starts empty, user authentication will fail until user accounts exist. You must populate at least one initial user directly via the MySQL Workbench before logging into the application.   
 Open MySQL command line
 Execute the following SQL commands to seed initial accounts
@@ -35,7 +35,7 @@ INSERT INTO sales_person (user_id, username, password) VALUES ('0003', 'sales1',
 
 
 
-Execution Instructions 
+#### Execution Instructions 
 
 Run the Application:
 Execute the main script using Python
